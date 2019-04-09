@@ -535,3 +535,27 @@ if __name__ == "__main__":
         env.render()
         if done:
             break
+
+
+# State observation             min     max     mean
+# 0	 hull_angle	                0	    2*pi	0.5
+# 1	 hull_angularVelocity	    -inf	+inf	-
+# 2	 vel_x	                    -1      +1	    -
+# 3	 vel_y	                    -1	    +1	    -
+# 4	 hip_joint_1_angle	        -inf	+inf	-
+# 5	 hip_joint_1_speed	        -inf	+inf	-
+# 6	 knee_joint_1_angle	        -inf	+inf	-
+# 7	 knee_joint_1_speed	        -inf	+inf	-
+# 8	 leg_1_ground_contact_flag	0	    1	    -
+# 9	 hip_joint_2_angle	        -inf	+inf	-
+# 10 hip_joint_2_speed	        -inf	+inf	-
+# 11 knee_joint_2_angle	        -inf	+inf	-
+# 12 knee_joint_2_speed	        -inf	+inf	-
+# 13 leg_2_ground_contact_flag	0	    1	    -
+# 14-23	10 lidar readings	    -inf	+inf	-
+
+# Action                        min     max
+# 0	Hip_1 (Torque / Velocity)	-1	    +1
+# 1	Knee_1 (Torque / Velocity)	-1	    +1
+# 2	Hip_2 (Torque / Velocity)	-1	    +1
+# 3	Knee_2 (Torque / Velocity)	-1	    +1
