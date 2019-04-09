@@ -7,16 +7,17 @@ import argparse
 import matplotlib.pyplot as plt
 import Box2D
 from Box2D.b2 import (edgeShape, circleShape, fixtureDef, polygonShape, revoluteJointDef, contactListener)
-
+import os
 import tensorflow as tf
 from tensorflow.python import keras
 from tensorflow.python.keras import layers
 
-from RandomAgent import RandomAgent
+from MasterAgent import *
+from RandomAgent import *
 from ActorCriticModel import ActorCriticModel
 
 parser = argparse.ArgumentParser(description='Run A3C algorithm on an OpenAI gym game.')
-parser.add_argument('--env_name', default='BipedalWalker-v2', type=str,
+parser.add_argument('--env_name', default='CartPole-v0', type=str,
                     help='Choose environment (default=\'BipedalWalker-v2\'.')
 parser.add_argument('--algorithm', default='random', type=str,
                     help='Choose between \'a3c\' and \'random\'.')
@@ -25,7 +26,7 @@ parser.add_argument('--train', dest='train', action='store_true',
 parser.add_argument('--lr', default=0.001,
                     help='Learning rate for the shared optimizer.')
 parser.add_argument('--update-freq', default=20, type=int,
-                    help='How often to update the global model.')
+                    help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=1000, type=int,
                     help='Global maximum number of episodes to run.')
 parser.add_argument('--gamma', default=0.99,
@@ -70,8 +71,14 @@ def record(episode,
 
 if __name__ == '__main__':
     print(args)
-    random = RandomAgent(args.env_name, args.max_eps)
+    # random = RandomAgent(args.env_name, args.max_eps)
+    # if args.train:
+    #     random.train()
+    # else:
+    #     random.run()
+
+    master = MasterAgent()
     if args.train:
-        random.train()
+        master.train()
     else:
-        random.run()
+        master.play()
