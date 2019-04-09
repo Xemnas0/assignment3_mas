@@ -19,7 +19,7 @@ from ActorCriticModel import ActorCriticModel
 parser = argparse.ArgumentParser(description='Run A3C algorithm on an OpenAI gym game.')
 parser.add_argument('--env_name', default='CartPole-v0', type=str,
                     help='Choose environment (default=\'BipedalWalker-v2\'.')
-parser.add_argument('--algorithm', default='random', type=str,
+parser.add_argument('--algorithm', default='a3c', type=str,
                     help='Choose between \'a3c\' and \'random\'.')
 parser.add_argument('--train', dest='train', action='store_true',
                     help='Train our model.')
@@ -71,12 +71,12 @@ def record(episode,
 
 if __name__ == '__main__':
     print(args)
+    tf.enable_eager_execution()
     # random = RandomAgent(args.env_name, args.max_eps)
     # if args.train:
     #     random.train()
     # else:
     #     random.run()
-
     master = MasterAgent()
     if args.train:
         master.train()

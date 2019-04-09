@@ -35,7 +35,7 @@ class MasterAgent:
             return
 
         res_queue = Queue()
-
+        print(f'Number of workers: {multiprocessing.cpu_count()}')
         workers = [Worker(self.state_size,
                           self.action_size,
                           self.global_model,
