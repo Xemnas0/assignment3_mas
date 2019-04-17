@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.python import keras
 from tensorflow.python.keras import layers
 
@@ -7,15 +8,26 @@ class ActorCriticModel(keras.Model):
         super(ActorCriticModel, self).__init__()
         self.state_size = state_size
         self.action_size = action_size
-        self.dense1 = layers.Dense(100, activation='relu')
-        self.policy_logits = layers.Dense(action_size)
-        self.dense2 = layers.Dense(100, activation='relu')
-        self.values = layers.Dense(1)
+        w_init = keras.initializers.normal(0, 0.1)
+        self.dense1 = layers.Dense(100, activation=tf.nn.relu6, kernel_initializer=w_init)
+        self.actions_mean = layers.Dense(action_size, activation=None, kernel_initializer=w_init)
+        self.actions_sigma = layers.Dense(action_size, activation=tf.nn.softplus, kernel_initializer=w_init)
+
+        self.dense2 = layers.Dense(100, activation=tf.nn.relu6, kernel_initializer=w_init)
+        self.values = layers.Dense(1, activation=None, kernel_initializer=w_init)
 
     def call(self, inputs):
-        # Forward pass
+        """
+        Forward pass
+        """
+
+        # Actor
         x = self.dense1(inputs)
-        logits = self.policy_logits(x)
+        mu = self.actions_mean(x)
+        sigma = self.actions_sigma(x)
+
+        # Critic
         v1 = self.dense2(inputs)
         values = self.values(v1)
-        return logits, values
+
+        return mu, sigma, values

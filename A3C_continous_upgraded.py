@@ -15,19 +15,18 @@ import matplotlib.pyplot as plt
 
 tf.compat.v1.disable_v2_behavior()
 
-
 GAME = 'BipedalWalker-v2'
 OUTPUT_GRAPH = True
 LOG_DIR = './log'
 N_WORKERS = multiprocessing.cpu_count()
 MAX_EP_STEP = 200
-MAX_GLOBAL_EP = 500
+MAX_GLOBAL_EP = 1000
 GLOBAL_NET_SCOPE = 'Global_Net'
 UPDATE_GLOBAL_ITER = 10
 GAMMA = 0.9
 ENTROPY_BETA = 0.0001
-LR_A = 0.0001    # learning rate for actor
-LR_C = 0.001    # learning rate for critic
+LR_A = 0.0001  # learning rate for actor
+LR_C = 0.001  # learning rate for critic
 GLOBAL_RUNNING_R = []
 GLOBAL_EP = 0
 env = gym.make(GAME)
@@ -40,11 +39,12 @@ A_BOUND = [env.action_space.low, env.action_space.high]
 class ACNet(object):
     def __init__(self, scope, globalAC=None):
 
-        if scope == GLOBAL_NET_SCOPE:   # get global network
+        if scope == GLOBAL_NET_SCOPE:  # get global network
             with tf.compat.v1.variable_scope(scope):
                 self.s = tf.compat.v1.placeholder(tf.float32, [None, N_S], 'S')
                 self.a_params, self.c_params = self._build_net(scope)[-2:]
-        else:   # local net, calculate losses
+
+        else:  # local net, calculate losses
             with tf.compat.v1.variable_scope(scope):
                 self.s = tf.compat.v1.placeholder(tf.float32, [None, N_S], 'S')
                 self.a_his = tf.compat.v1.placeholder(tf.float32, [None, N_A], 'A')
@@ -129,20 +129,22 @@ class Worker(object):
                 ep_r += r
                 buffer_s.append(s)
                 buffer_a.append(a)
-                buffer_r.append((r+8)/8)    # normalize
+                constant = 8
+                buffer_r.append((r + constant) / constant)    # normalize
 
-                if total_step % UPDATE_GLOBAL_ITER == 0 or done:   # update global and assign to local net
+                if total_step % UPDATE_GLOBAL_ITER == 0 or done:  # update global and assign to local net
                     if done:
-                        v_s_ = 0   # terminal
+                        v_s_ = 0  # terminal
                     else:
                         v_s_ = SESS.run(self.AC.v, {self.AC.s: s_[np.newaxis, :]})[0, 0]
                     buffer_v_target = []
-                    for r in buffer_r[::-1]:    # reverse buffer r
+                    for r in buffer_r[::-1]:  # reverse buffer r
                         v_s_ = r + GAMMA * v_s_
                         buffer_v_target.append(v_s_)
                     buffer_v_target.reverse()
 
-                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
+                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(
+                        buffer_v_target)
                     feed_dict = {
                         self.AC.s: buffer_s,
                         self.AC.a_his: buffer_a,
@@ -163,9 +165,10 @@ class Worker(object):
                         self.name,
                         "Ep:", GLOBAL_EP,
                         "| Ep_r: %i" % GLOBAL_RUNNING_R[-1],
-                          )
+                    )
                     GLOBAL_EP += 1
                     break
+
 
 if __name__ == "__main__":
     # tf.enable_eager_execution()
@@ -179,7 +182,7 @@ if __name__ == "__main__":
         workers = []
         # Create worker
         for i in range(N_WORKERS):
-            i_name = 'W_%i' % i   # worker name
+            i_name = 'W_%i' % i  # worker name
             workers.append(Worker(i_name, GLOBAL_AC))
 
     COORD = tf.train.Coordinator()
@@ -203,7 +206,6 @@ if __name__ == "__main__":
     plt.ylabel('Total moving reward')
     plt.show()
 
-
     # Run the game
     env = gym.make(GAME).unwrapped
     state = env.reset()
@@ -224,4 +226,3 @@ if __name__ == "__main__":
     #     print("Received Keyboard Interrupt. Shutting down.")
     # finally:
     #     env.close()
-

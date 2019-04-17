@@ -3,10 +3,10 @@ from ActorCriticModel import ActorCriticModel
 import gym
 from Memory import Memory
 import tensorflow as tf
+import tensorflow_probability as tfp
 from a3c_bipedalWalker import args, record
 import numpy as np
 import os
-from a3c_bipedalWalker import args
 
 
 class Worker(threading.Thread):
@@ -14,7 +14,7 @@ class Worker(threading.Thread):
     global_episode = 0
     # Moving average reward
     global_moving_average_reward = 0
-    best_score = 0
+    best_score = -1e100
     save_lock = threading.Lock()
 
     def __init__(self,
@@ -42,26 +42,29 @@ class Worker(threading.Thread):
     def run(self):
         total_step = 1
         mem = Memory()
+        # Loop for all the episodes
         while Worker.global_episode < args.max_eps:
             current_state = self.env.reset()
             mem.clear()
             ep_reward = 0.
             ep_steps = 0
             self.ep_loss = 0
-
-            time_count = 0
-            done = False
-            while not done:
-                logits, _ = self.local_model(
+            time_count = 1
+            # Loop through one episode, until done or reached maximum steps per episode
+            for ep_t in range(args.max_step_per_ep):
+                mu, sigma, _ = self.local_model(
                     tf.convert_to_tensor(current_state[None, :],
                                          dtype=tf.float32))
-                probs = tf.nn.softmax(logits)
+                cov_matrix = np.diag(sigma[0])
+                action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
+                                          clip_value_min=self.env.action_space.low,
+                                          clip_value_max=self.env.action_space.high)
+                new_state, reward, _, _ = self.env.step(action)
 
-                action = np.random.choice(self.action_size, p=probs.numpy()[0])
-                new_state, reward, done, _ = self.env.step(action)
-                if done:
-                    reward = -1  # TODO: check if this is necessary
+                done = True if ep_t == args.max_step_per_ep - 1 else False
+
                 ep_reward += reward
+                # reward = (reward + 8) / 8
                 mem.store(current_state, action, reward)
 
                 if time_count == args.update_freq or done:
@@ -74,10 +77,10 @@ class Worker(threading.Thread):
                                                        args.gamma)
                     self.ep_loss += total_loss
                     # Calculate local gradients
-                    grads = tape.gradient(total_loss, self.local_model.trainable_weights)
+                    grads = tape.gradient(total_loss, self.local_model.trainable_variables)
                     # Push local gradients to global model
                     self.opt.apply_gradients(zip(grads,
-                                                 self.global_model.trainable_weights))
+                                                 self.global_model.trainable_variables))
                     # Update local model with new weights
                     self.local_model.set_weights(self.global_model.get_weights())
 
@@ -113,7 +116,7 @@ class Worker(threading.Thread):
                      memory,
                      gamma=0.99):
         if done:
-            reward_sum = 0.  # terminal
+            reward_sum = 0.  # terminal TODO: Check why
         else:
             reward_sum = self.local_model(
                 tf.convert_to_tensor(new_state[None, :],
@@ -126,24 +129,21 @@ class Worker(threading.Thread):
             discounted_rewards.append(reward_sum)
         discounted_rewards.reverse()
 
-        logits, values = self.local_model(
+        mu, sigma, values = self.local_model(
             tf.convert_to_tensor(np.vstack(memory.states),
                                  dtype=tf.float32))
         # Get our advantages
         advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
                                          dtype=tf.float32) - values
-        # Value loss
-        value_loss = advantage ** 2
+        # Critic loss
+        critic_loss = tf.reduce_mean(advantage ** 2)
 
-        # Calculate our policy loss
-        actions_one_hot = tf.one_hot(memory.actions, self.action_size, dtype=tf.float32)
+        # Actor loss
+        normal_dist = tfp.distributions.Normal(mu, sigma + 1e-16)
+        log_prob = normal_dist.log_prob(np.array(memory.actions))
+        entropy = normal_dist.entropy()
+        exp_v = log_prob * advantage + 1e-4 * entropy
+        actor_loss = tf.reduce_mean(- exp_v)
 
-        policy = tf.nn.softmax(logits)
-        entropy = tf.reduce_sum(policy * tf.log(policy + 1e-20), axis=1)
-
-        policy_loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=actions_one_hot,
-                                                                 logits=logits)
-        policy_loss *= tf.stop_gradient(advantage)
-        policy_loss -= 0.01 * entropy
-        total_loss = tf.reduce_mean((0.5 * value_loss + policy_loss))
+        total_loss = critic_loss + actor_loss
         return total_loss

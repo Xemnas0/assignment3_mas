@@ -17,7 +17,7 @@ from RandomAgent import *
 from ActorCriticModel import ActorCriticModel
 
 parser = argparse.ArgumentParser(description='Run A3C algorithm on an OpenAI gym game.')
-parser.add_argument('--env_name', default='CartPole-v0', type=str,
+parser.add_argument('--env_name', default='BipedalWalker-v2', type=str,
                     help='Choose environment (default=\'BipedalWalker-v2\'.')
 parser.add_argument('--algorithm', default='a3c', type=str,
                     help='Choose between \'a3c\' and \'random\'.')
@@ -25,11 +25,13 @@ parser.add_argument('--train', dest='train', action='store_true',
                     help='Train our model.')
 parser.add_argument('--lr', default=0.001,
                     help='Learning rate for the shared optimizer.')
-parser.add_argument('--update-freq', default=20, type=int,
+parser.add_argument('--update-freq', default=10, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=1000, type=int,
                     help='Global maximum number of episodes to run.')
-parser.add_argument('--gamma', default=0.99,
+parser.add_argument('--max_step_per_ep', default=200, type=int,
+                    help='Maximum number of steps per episode.')
+parser.add_argument('--gamma', default=0.9,
                     help='Discount factor of rewards.')
 parser.add_argument('--save-dir', default='/tmp/', type=str,
                     help='Directory in which you desire to save the model.')
@@ -58,11 +60,11 @@ def record(episode,
     else:
         global_ep_reward = global_ep_reward * 0.99 + episode_reward * 0.01
     print(
-        f"Episode: {episode} | "
-        f"Moving Average Reward: {int(global_ep_reward)} | "
-        f"Episode Reward: {int(episode_reward)} | "
-        f"Loss: {int(total_loss / float(num_steps) * 1000) / 1000} | "
-        f"Steps: {num_steps} | "
+        f"Episode: {episode} | " +
+        f"Moving Average Reward: {int(global_ep_reward)} | " +
+        f"Episode Reward: {int(episode_reward)} | " +
+        f"Loss: {int(total_loss / float(num_steps) * 1000) / 1000} | " +
+        f"Steps: {num_steps} | " +
         f"Worker: {worker_idx}"
     )
     result_queue.put(global_ep_reward)
@@ -71,7 +73,7 @@ def record(episode,
 
 if __name__ == '__main__':
     print(args)
-    tf.enable_eager_execution()
+
     # random = RandomAgent(args.env_name, args.max_eps)
     # if args.train:
     #     random.train()

@@ -1,5 +1,6 @@
 import gym
 import tensorflow as tf
+from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -21,8 +22,8 @@ class MasterAgent:
 
         env = gym.make(self.game_name)
         self.state_size = env.observation_space.shape[0]
-        self.action_size = env.action_space.n
-        self.opt = tf.train.AdamOptimizer(args.lr, use_locking=True)
+        self.action_size = env.action_space.shape[0]
+        self.opt = keras.optimizers.Adam(lr=args.lr)
         print(self.state_size, self.action_size)
 
         self.global_model = ActorCriticModel(self.state_size, self.action_size)  # global network
@@ -77,9 +78,12 @@ class MasterAgent:
         try:
             while not done:
                 env.render(mode='rgb_array')
-                policy, value = model(tf.convert_to_tensor(state[None, :], dtype=tf.float32))
-                policy = tf.nn.softmax(policy)
-                action = np.argmax(policy)
+                mu, sigma, value = model(tf.convert_to_tensor(state[None, :], dtype=tf.float32))
+                cov_matrix = np.diag(sigma[0])
+                action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
+                                          clip_value_min=env.action_space.low,
+                                          clip_value_max=env.action_space.high)
+
                 state, reward, done, _ = env.step(action)
                 reward_sum += reward
                 print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
