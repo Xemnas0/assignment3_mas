@@ -19,12 +19,15 @@ import os
 import shutil
 import matplotlib.pyplot as plt
 
+plt.plot([1, 2, 3], [4, 5, 6])
+plt.show()
+
 GAME = 'BipedalWalker-v2'
 OUTPUT_GRAPH = True
 LOG_DIR = './log'
 N_WORKERS = multiprocessing.cpu_count()
 MAX_EP_STEP = 200
-MAX_GLOBAL_EP = 10
+MAX_GLOBAL_EP = 50
 GLOBAL_NET_SCOPE = 'Global_Net'
 UPDATE_GLOBAL_ITER = 10
 GAMMA = 0.9
@@ -208,23 +211,23 @@ if __name__ == "__main__":
 
 
     # Run the game
-    env = gym.make(GAME).unwrapped
-    state = env.reset()
-
-    done = False
-    step_counter = 0
-    reward_sum = 0
-
-    try:
-        while not done:
-            env.render(mode='rgd_array')
-            action = GLOBAL_AC.choose_action(state)
-            state, reward, done, _ = env.step(action)
-            reward_sum += reward
-            print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
-            step_counter += 1
-    except KeyboardInterrupt:
-        print("Received Keyboard Interrupt. Shutting down.")
-    finally:
-        env.close()
+    # env = gym.make(GAME).unwrapped
+    # state = env.reset()
+    #
+    # done = False
+    # step_counter = 0
+    # reward_sum = 0
+    #
+    # try:
+    #     while not done:
+    #         env.render(mode='rgd_array')
+    #         action = GLOBAL_AC.choose_action(state)
+    #         state, reward, done, _ = env.step(action)
+    #         reward_sum += reward
+    #         print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
+    #         step_counter += 1
+    # except KeyboardInterrupt:
+    #     print("Received Keyboard Interrupt. Shutting down.")
+    # finally:
+    #     env.close()
 

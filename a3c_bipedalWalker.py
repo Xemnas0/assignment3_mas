@@ -4,6 +4,10 @@ import multiprocessing
 import numpy as np
 from queue import Queue
 import argparse
+from sys import platform as sys_pf
+if sys_pf == 'darwin':
+    import matplotlib
+    matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import Box2D
 from Box2D.b2 import (edgeShape, circleShape, fixtureDef, polygonShape, revoluteJointDef, contactListener)
@@ -29,9 +33,9 @@ parser.add_argument('--update-freq', default=10, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=1000, type=int,
                     help='Global maximum number of episodes to run.')
-parser.add_argument('--max_step_per_ep', default=200, type=int,
+parser.add_argument('--max_step_per_ep', default=100, type=int,
                     help='Maximum number of steps per episode.')
-parser.add_argument('--gamma', default=0.9,
+parser.add_argument('--gamma', default=0.99,
                     help='Discount factor of rewards.')
 parser.add_argument('--save-dir', default='/tmp/', type=str,
                     help='Directory in which you desire to save the model.')

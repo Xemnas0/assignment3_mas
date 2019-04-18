@@ -76,7 +76,7 @@ class MasterAgent:
         reward_sum = 0
 
         try:
-            while not done:
+            while not done and step_counter < 1600:
                 env.render(mode='rgb_array')
                 mu, sigma, value = model(tf.convert_to_tensor(state[None, :], dtype=tf.float32))
                 cov_matrix = np.diag(sigma[0])
