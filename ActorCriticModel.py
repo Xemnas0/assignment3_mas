@@ -10,7 +10,7 @@ class ActorCriticModel(keras.Model):
         self.action_size = action_size
         w_init = keras.initializers.normal(0, 0.1)
         self.dense1 = layers.Dense(100, activation=tf.nn.relu6, kernel_initializer=w_init)
-        self.actions_mean = layers.Dense(action_size, activation=None, kernel_initializer=w_init)
+        self.actions_mean = layers.Dense(action_size, activation=tf.nn.tanh, kernel_initializer=w_init)
         self.actions_sigma = layers.Dense(action_size, activation=tf.nn.softplus, kernel_initializer=w_init)
 
         self.dense2 = layers.Dense(100, activation=tf.nn.relu6, kernel_initializer=w_init)

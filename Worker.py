@@ -65,10 +65,10 @@ class Worker(threading.Thread):
 
                 # Playing around with scoring function to promote moving forward
                 # instead of standing still and not falling
-                if done_game:
-                    reward = -1
-                else:
-                    reward += 0.5
+                # if done_game:
+                #     reward = -1
+                # else:
+                #     reward += 0.5
                 ep_reward += reward
                 # reward = (reward + 8) / 8
                 mem.store(current_state, action, reward)
@@ -147,7 +147,7 @@ class Worker(threading.Thread):
 
         # Actor loss
         normal_dist = tfp.distributions.Normal(mu, sigma + 1e-10)
-        log_prob = normal_dist.log_prob(np.array(memory.actions) + 1e-10) / 10
+        log_prob = normal_dist.log_prob(np.array(memory.actions) + 1e-6)
         actor_loss = - log_prob * tf.stop_gradient(advantage)
 
         # Entropy
@@ -159,6 +159,5 @@ class Worker(threading.Thread):
         # self.exp_v = ENTROPY_BETA * entropy + exp_v
         # self.a_loss = tf.reduce_mean(-self.exp_v)
         # print(entropy)
-        # print(critic_loss, ", ", actor_loss)
         total_loss = tf.reduce_mean(critic_loss + actor_loss + entropy)
         return total_loss

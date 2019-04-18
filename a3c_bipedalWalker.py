@@ -27,7 +27,7 @@ parser.add_argument('--algorithm', default='a3c', type=str,
                     help='Choose between \'a3c\' and \'random\'.')
 parser.add_argument('--train', dest='train', action='store_true',
                     help='Train our model.')
-parser.add_argument('--lr', default=0.001,
+parser.add_argument('--lr', default=0.0001,
                     help='Learning rate for the shared optimizer.')
 parser.add_argument('--update-freq', default=10, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
