@@ -33,7 +33,7 @@ parser.add_argument('--update-freq', default=10, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=1000, type=int,
                     help='Global maximum number of episodes to run.')
-parser.add_argument('--max_step_per_ep', default=100, type=int,
+parser.add_argument('--max_step_per_ep', default=200, type=int,
                     help='Maximum number of steps per episode.')
 parser.add_argument('--gamma', default=0.99,
                     help='Discount factor of rewards.')

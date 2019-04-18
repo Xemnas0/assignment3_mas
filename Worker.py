@@ -62,8 +62,13 @@ class Worker(threading.Thread):
                 new_state, reward, done_game, _ = self.env.step(action)
 
                 done = True if ep_t == args.max_step_per_ep - 1 else False
+
+                # Playing around with scoring function to promote moving forward
+                # instead of standing still and not falling
                 if done_game:
-                    ep_reward += 100
+                    reward = -1
+                else:
+                    reward += 0.5
                 ep_reward += reward
                 # reward = (reward + 8) / 8
                 mem.store(current_state, action, reward)
@@ -138,14 +143,15 @@ class Worker(threading.Thread):
         advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
                                          dtype=tf.float32) - values
         # Critic loss
-        critic_loss = tf.reduce_mean(0.5*tf.square(advantage))
+        critic_loss = 0.5 * tf.square(advantage) # C_V = 0.5 parameter from article
 
         # Actor loss
-        normal_dist = tfp.distributions.Normal(mu, sigma + 1e-16)
-        log_prob = normal_dist.log_prob(np.array(memory.actions) + 1e-10)
-        entropy = normal_dist.entropy()
-        exp_v = log_prob * tf.stop_gradient(advantage) - 1e-2 * entropy
-        actor_loss = tf.reduce_mean(exp_v)
+        normal_dist = tfp.distributions.Normal(mu, sigma + 1e-10)
+        log_prob = normal_dist.log_prob(np.array(memory.actions) + 1e-10) / 10
+        actor_loss = - log_prob * tf.stop_gradient(advantage)
+
+        # Entropy
+        entropy = 0.0001 * normal_dist.entropy()
 
         # log_prob = normal_dist.log_prob(self.a_his)
         # exp_v = log_prob * tf.stop_gradient(td)
@@ -154,5 +160,5 @@ class Worker(threading.Thread):
         # self.a_loss = tf.reduce_mean(-self.exp_v)
         # print(entropy)
         # print(critic_loss, ", ", actor_loss)
-        total_loss = critic_loss + actor_loss
+        total_loss = tf.reduce_mean(critic_loss + actor_loss + entropy)
         return total_loss
