@@ -7,6 +7,7 @@ import tensorflow_probability as tfp
 from a3c_bipedalWalker import args, record
 import numpy as np
 import os
+import math
 
 
 class Worker(threading.Thread):
@@ -57,18 +58,15 @@ class Worker(threading.Thread):
                                          dtype=tf.float32))
                 cov_matrix = np.diag(sigma[0])
                 action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
-                                          clip_value_min=self.env.action_space.low,
-                                          clip_value_max=self.env.action_space.high)
+                                          clip_value_min=-0.999999,
+                                          clip_value_max=0.999999)
                 new_state, reward, done_game, _ = self.env.step(action)
 
                 done = True if ep_t == args.max_step_per_ep - 1 else False
 
                 # Playing around with scoring function to promote moving forward
                 # instead of standing still and not falling
-                # if done_game:
-                #     reward = -1
-                # else:
-                #     reward += 0.5
+                reward = max(min(float(reward), 1.0), -1.0)
                 ep_reward += reward
                 # reward = (reward + 8) / 8
                 mem.store(current_state, action, reward)
@@ -83,13 +81,12 @@ class Worker(threading.Thread):
                                                        args.gamma)
                     self.ep_loss += total_loss
                     # Calculate local gradients
-                    grads = tape.gradient(total_loss, self.local_model.trainable_variables)
+                    grads = tape.gradient(total_loss, self.local_model.trainable_weights)
                     # Push local gradients to global model
                     self.opt.apply_gradients(zip(grads,
-                                                 self.global_model.trainable_variables))
+                                                 self.global_model.trainable_weights))
                     # Update local model with new weights
                     self.local_model.set_weights(self.global_model.get_weights())
-
                     mem.clear()
                     time_count = 0
 
@@ -139,25 +136,32 @@ class Worker(threading.Thread):
         mu, sigma, values = self.local_model(
             tf.convert_to_tensor(np.vstack(memory.states),
                                  dtype=tf.float32))
+
         # Get our advantages
         advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
                                          dtype=tf.float32) - values
         # Critic loss
-        critic_loss = 0.5 * tf.square(advantage) # C_V = 0.5 parameter from article
+        critic_loss = tf.square(advantage)
 
         # Actor loss
-        normal_dist = tfp.distributions.Normal(mu, sigma + 1e-10)
-        log_prob = normal_dist.log_prob(np.array(memory.actions) + 1e-6)
+        normal_dist = tfp.distributions.Normal(mu, sigma)
+        log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions)) + 1e-10)
         actor_loss = - log_prob * tf.stop_gradient(advantage)
 
         # Entropy
-        entropy = 0.0001 * normal_dist.entropy()
-
+        # entropy = 0.5 + 0.5 * tf.math.log(2 * math.pi) + tf.math.log(normal_dist.scale)  # exploration
         # log_prob = normal_dist.log_prob(self.a_his)
         # exp_v = log_prob * tf.stop_gradient(td)
-        # entropy = normal_dist.entropy()  # encourage exploration
+        entropy = normal_dist.entropy()  # encourage exploration
         # self.exp_v = ENTROPY_BETA * entropy + exp_v
         # self.a_loss = tf.reduce_mean(-self.exp_v)
-        # print(entropy)
-        total_loss = tf.reduce_mean(critic_loss + actor_loss + entropy)
+        # print("sigma: ", sigma[0])
+        # print("mu: ", mu[0])
+        # print("val: ", values)
+        # print("dis rew: ", discounted_rewards)
+        # print("crit: ", tf.reduce_mean(critic_loss))
+        # print("actor: ", tf.reduce_mean(actor_loss))
+        # print("entropy: ", tf.reduce_mean(entropy))
+        total_loss = tf.reduce_mean(0.5 * critic_loss + actor_loss + 0.005 * entropy)
+        # print("loss: ", total_loss)
         return total_loss
