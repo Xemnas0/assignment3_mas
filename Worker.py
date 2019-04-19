@@ -63,7 +63,7 @@ class Worker(threading.Thread):
                 new_state, reward, done_game, _ = self.env.step(action)
 
                 # Normalize labels
-                new_state[0] -= math.pi
+                new_state[0] = (new_state[0] - math.pi) / math.pi
                 if new_state[8] < 0.5:
                     new_state[8] = -1
                 if new_state[13] < 0.5:
@@ -90,6 +90,8 @@ class Worker(threading.Thread):
                     self.ep_loss += total_loss
                     # Calculate local gradients
                     grads = tape.gradient(total_loss, self.local_model.trainable_weights)
+                    print(self.local_model.trainable_weights)
+                    print(self.global_model.trainable_weights)
                     # Push local gradients to global model
                     self.opt.apply_gradients(zip(grads,
                                                  self.global_model.trainable_weights))
@@ -146,23 +148,21 @@ class Worker(threading.Thread):
                                  dtype=tf.float32))
 
         # Get our advantages
-        advantage = tf.math.abs(tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
-                                         dtype=tf.float32) - values)
+        advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
+                                         dtype=tf.float32) - values
         # Critic loss
         critic_loss = tf.square(advantage)
 
         # Actor loss
         normal_dist = tfp.distributions.Normal(mu, sigma)
         log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions)) + 1e-10)
-        actor_loss = - log_prob * tf.stop_gradient(advantage)
+
+        # actor_loss = - log_prob * tf.stop_gradient(advantage)
+        actor_loss = - log_prob * advantage
 
         # Entropy
-        # entropy = 0.5 + 0.5 * tf.math.log(2 * math.pi) + tf.math.log(normal_dist.scale)  # exploration
-        # log_prob = normal_dist.log_prob(self.a_his)
-        # exp_v = log_prob * tf.stop_gradient(td)
         entropy = normal_dist.entropy()  # encourage exploration
-        # self.exp_v = ENTROPY_BETA * entropy + exp_v
-        # self.a_loss = tf.reduce_mean(-self.exp_v)
+
         # print("sigma: ", sigma[0])
         # print("mu: ", mu[0])
         # print("val: ", values)

@@ -31,7 +31,7 @@ parser.add_argument('--lr', default=0.0001,
                     help='Learning rate for the shared optimizer.')
 parser.add_argument('--update-freq', default=20, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
-parser.add_argument('--max-eps', default=1000, type=int,
+parser.add_argument('--max-eps', default=10000, type=int,
                     help='Global maximum number of episodes to run.')
 parser.add_argument('--max_step_per_ep', default=200, type=int,
                     help='Maximum number of steps per episode.')
