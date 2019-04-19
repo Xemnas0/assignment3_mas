@@ -27,9 +27,9 @@ parser.add_argument('--algorithm', default='a3c', type=str,
                     help='Choose between \'a3c\' and \'random\'.')
 parser.add_argument('--train', dest='train', action='store_true',
                     help='Train our model.')
-parser.add_argument('--lr', default=0.0005,
+parser.add_argument('--lr', default=0.0001,
                     help='Learning rate for the shared optimizer.')
-parser.add_argument('--update-freq', default=50, type=int,
+parser.add_argument('--update-freq', default=20, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=1000, type=int,
                     help='Global maximum number of episodes to run.')

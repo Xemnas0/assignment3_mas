@@ -7,7 +7,8 @@ class ActorCriticModel(keras.Model):
     def __init__(self, state_size, action_size):
         super(ActorCriticModel, self).__init__()
         self.state_size = state_size
-        self.action_size = action_size
+        # self.action_size = action_size
+        self.action_size = 14
         w_init = keras.initializers.normal(0, 0.1)
         w_uniform_init = keras.initializers.RandomUniform(minval=-0.99, maxval=0.99, seed=None)
         self.dense1 = layers.Dense(200, activation=tf.nn.relu6, kernel_initializer=w_init)
@@ -23,12 +24,13 @@ class ActorCriticModel(keras.Model):
         """
 
         # Actor
+
         x = self.dense1(inputs)
         mu = self.actions_mean(x)
         sigma = self.actions_sigma(x) + 0.001
 
         # Critic
-        v1 = self.dense1(inputs)
+        v1 = self.dense2(inputs)
         values = self.values(v1)
 
         return mu, sigma, values

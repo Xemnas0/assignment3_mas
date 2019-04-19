@@ -10,6 +10,7 @@ from queue import Queue
 import multiprocessing
 from a3c_bipedalWalker import args
 from Worker import Worker
+import math
 
 
 class MasterAgent:
@@ -67,6 +68,12 @@ class MasterAgent:
     def play(self):
         env = gym.make(self.game_name).unwrapped
         state = env.reset()
+        # Normalize labels
+        state[0] -= math.pi
+        if state[8] < 0.5:
+            state[8] = -1
+        if state[13] < 0.5:
+            state[13] = -1
         model = self.global_model
         model_path = os.path.join(self.save_dir, 'model_{}.h5'.format(self.game_name))
         print('Loading model from: {}'.format(model_path))
@@ -88,6 +95,12 @@ class MasterAgent:
                 #                           clip_value_max=env.action_space.high)
 
                 state, reward, done, _ = env.step(action)
+                # Normalize labels
+                state[0] -= math.pi
+                if state[8] < 0.5:
+                    state[8] = -1
+                if state[13] < 0.5:
+                    state[13] = -1
                 reward_sum += reward
                 print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
                 step_counter += 1

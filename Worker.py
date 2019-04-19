@@ -62,6 +62,13 @@ class Worker(threading.Thread):
                                           clip_value_max=0.999999)
                 new_state, reward, done_game, _ = self.env.step(action)
 
+                # Normalize labels
+                new_state[0] -= math.pi
+                if new_state[8] < 0.5:
+                    new_state[8] = -1
+                if new_state[13] < 0.5:
+                    new_state[13] = -1
+
                 done = True if ep_t == args.max_step_per_ep - 1 else False
 
                 # Playing around with scoring function to promote moving forward
@@ -72,6 +79,7 @@ class Worker(threading.Thread):
                 mem.store(current_state, action, reward)
 
                 if time_count == args.update_freq or done:
+
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
                     with tf.GradientTape() as tape:
@@ -138,8 +146,8 @@ class Worker(threading.Thread):
                                  dtype=tf.float32))
 
         # Get our advantages
-        advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
-                                         dtype=tf.float32) - values
+        advantage = tf.math.abs(tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
+                                         dtype=tf.float32) - values)
         # Critic loss
         critic_loss = tf.square(advantage)
 
