@@ -56,11 +56,13 @@ class Worker(threading.Thread):
                 mu, sigma, _ = self.local_model(
                     tf.convert_to_tensor(current_state[None, :],
                                          dtype=tf.float32))
-                cov_matrix = np.diag(sigma[0])
-                action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
+                # cov_matrix = np.diag(sigma[0])
+                normal_dist = tfp.distributions.Normal(mu, sigma)
+                action = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0),
                                           clip_value_min=-0.999999,
                                           clip_value_max=0.999999)
-                new_state, reward, done_game, _ = self.env.step(action)
+                # print(action.numpy())
+                new_state, reward, done_game, _ = self.env.step(action.numpy()[0])
 
                 # Normalize labels
                 new_state[0] = (new_state[0] - math.pi) / math.pi
@@ -68,6 +70,8 @@ class Worker(threading.Thread):
                     new_state[8] = -1
                 if new_state[13] < 0.5:
                     new_state[13] = -1
+                reward += new_state[2] + min(new_state[3], 0)  # Add score for moving right and keeping head up
+                reward -= math.fabs(new_state[4]-new_state[9])
 
                 done = True if ep_t == args.max_step_per_ep - 1 else False
 
@@ -90,8 +94,6 @@ class Worker(threading.Thread):
                     self.ep_loss += total_loss
                     # Calculate local gradients
                     grads = tape.gradient(total_loss, self.local_model.trainable_weights)
-                    print(self.local_model.trainable_weights)
-                    print(self.global_model.trainable_weights)
                     # Push local gradients to global model
                     self.opt.apply_gradients(zip(grads,
                                                  self.global_model.trainable_weights))
@@ -131,9 +133,9 @@ class Worker(threading.Thread):
         if done:
             reward_sum = 0.  # terminal TODO: Check why
         else:
-            reward_sum = self.local_model(
+            _, _, reward_sum = self.local_model(
                 tf.convert_to_tensor(new_state[None, :],
-                                     dtype=tf.float32))[-1].numpy()[0]
+                                     dtype=tf.float32))
 
         # Get discounted rewards
         discounted_rewards = []
@@ -157,8 +159,8 @@ class Worker(threading.Thread):
         normal_dist = tfp.distributions.Normal(mu, sigma)
         log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions)) + 1e-10)
 
-        # actor_loss = - log_prob * tf.stop_gradient(advantage)
-        actor_loss = - log_prob * advantage
+        actor_loss = - log_prob * tf.stop_gradient(advantage)
+        # actor_loss = - log_prob * advantage
 
         # Entropy
         entropy = normal_dist.entropy()  # encourage exploration
@@ -167,9 +169,9 @@ class Worker(threading.Thread):
         # print("mu: ", mu[0])
         # print("val: ", values)
         # print("dis rew: ", discounted_rewards)
-        # print("crit: ", tf.reduce_mean(critic_loss))
-        # print("actor: ", tf.reduce_mean(actor_loss))
+        print("crit: ", tf.reduce_mean(critic_loss))
+        print("actor: ", tf.reduce_mean(actor_loss))
         # print("entropy: ", tf.reduce_mean(entropy))
-        total_loss = tf.reduce_mean(0.5 * critic_loss + actor_loss + 0.005 * entropy)
+        total_loss = tf.reduce_mean(0.5 * critic_loss + actor_loss - 0.005 * entropy)
         # print("loss: ", total_loss)
         return total_loss

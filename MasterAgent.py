@@ -90,9 +90,9 @@ class MasterAgent:
                 action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
                                           clip_value_min=env.action_space.low,
                                           clip_value_max=env.action_space.high)
-                action = tf.clip_by_value(mu[0],
-                                          clip_value_min=env.action_space.low,
-                                          clip_value_max=env.action_space.high)
+                # action = tf.clip_by_value(mu[0],
+                #                           clip_value_min=env.action_space.low,
+                #                           clip_value_max=env.action_space.high)
 
                 state, reward, done, _ = env.step(action)
                 # Normalize labels
@@ -101,6 +101,7 @@ class MasterAgent:
                     state[8] = -1
                 if state[13] < 0.5:
                     state[13] = -1
+                print(math.fabs(state[4]-state[9]))
                 reward_sum += reward
                 print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
                 step_counter += 1
