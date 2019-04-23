@@ -1,5 +1,4 @@
 import threading
-import gym
 import multiprocessing
 import numpy as np
 from queue import Queue
@@ -9,15 +8,12 @@ if sys_pf == 'darwin':
     import matplotlib
     matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-import Box2D
-from Box2D.b2 import (edgeShape, circleShape, fixtureDef, polygonShape, revoluteJointDef, contactListener)
 import os
 import tensorflow as tf
-from tensorflow.python import keras
 from tensorflow.python.keras import layers
 
 from MasterAgent import *
-from RandomAgent import *
+from TF.RandomAgent import *
 from ActorCriticModel import ActorCriticModel
 
 parser = argparse.ArgumentParser(description='Run A3C algorithm on an OpenAI gym game.')
@@ -33,7 +29,7 @@ parser.add_argument('--update-freq', default=20, type=int,
                     help='How often to update the global model.')  # TODO: experiment with this
 parser.add_argument('--max-eps', default=10000, type=int,
                     help='Global maximum number of episodes to run.')
-parser.add_argument('--max_step_per_ep', default=200, type=int,
+parser.add_argument('--max_step_per_ep', default=1600, type=int,
                     help='Maximum number of steps per episode.')
 parser.add_argument('--gamma', default=0.99,
                     help='Discount factor of rewards.')

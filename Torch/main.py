@@ -5,10 +5,10 @@ import argparse
 import torch
 import torch.multiprocessing as mp
 from environment import create_env
-from model import A3C_MLP, A3C_CONV
+from model import A3C_MLP
 from train import train
 from test import test
-from shared_optim import SharedRMSprop, SharedAdam
+from shared_optim import SharedAdam
 import time
 
 
@@ -76,11 +76,6 @@ parser.add_argument(
     metavar='SM',
     help='Save model on every test run high score matched or bested')
 parser.add_argument(
-    '--optimizer',
-    default='Adam',
-    metavar='OPT',
-    help='shares optimizer choice of Adam or RMSprop')
-parser.add_argument(
     '--load-model-dir',
     default='trained_models/',
     metavar='LMD',
@@ -96,28 +91,10 @@ parser.add_argument(
     metavar='LG',
     help='folder to save logs')
 parser.add_argument(
-    '--model',
-    default='MLP',
-    metavar='M',
-    help='Model type to use')
-parser.add_argument(
-    '--stack-frames',
-    type=int,
-    default=1,
-    metavar='SF',
-    help='Choose number of observations to stack')
-parser.add_argument(
-    '--gpu-ids',
-    type=int,
-    default=-1,
-    nargs='+',
-    help='GPUs to use [-1 CPU only] (default: -1)')
-parser.add_argument(
     '--amsgrad',
     default=True,
     metavar='AM',
     help='Adam optimizer amsgrad parameter')
-
 
 # Based on
 # https://github.com/pytorch/examples/tree/master/mnist_hogwild
@@ -128,17 +105,9 @@ parser.add_argument(
 if __name__ == '__main__':
     args = parser.parse_args()
     torch.manual_seed(args.seed)
-    if args.gpu_ids == -1:
-        args.gpu_ids = [-1]
-    else:
-        torch.cuda.manual_seed(args.seed)
-        mp.set_start_method('spawn')
-    env = create_env(args.env, args)
-    if args.model == 'MLP':
-        shared_model = A3C_MLP(
-            env.observation_space.shape[0], env.action_space, args.stack_frames)
-    if args.model == 'CONV':
-        shared_model = A3C_CONV(args.stack_frames, env.action_space)
+    env = create_env(args.env)
+    shared_model = A3C_MLP(
+        env.observation_space.shape[0], env.action_space)
     if args.load:
         saved_state = torch.load('{0}{1}.dat'.format(
             args.load_model_dir, args.env), map_location=lambda storage, loc: storage)
@@ -146,11 +115,8 @@ if __name__ == '__main__':
     shared_model.share_memory()
 
     if args.shared_optimizer:
-        if args.optimizer == 'RMSprop':
-            optimizer = SharedRMSprop(shared_model.parameters(), lr=args.lr)
-        if args.optimizer == 'Adam':
-            optimizer = SharedAdam(
-                shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
+        optimizer = SharedAdam(
+            shared_model.parameters(), lr=args.lr, amsgrad=args.amsgrad)
         optimizer.share_memory()
     else:
         optimizer = None

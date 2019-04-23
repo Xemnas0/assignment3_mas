@@ -32,32 +32,12 @@ def norm_col_init(weights, std=1.0):
     return x
 
 
-def ensure_shared_grads(model, shared_model, gpu=False):
+def ensure_shared_grads(model, shared_model):
     for param, shared_param in zip(model.parameters(), shared_model.parameters()):
-        if shared_param.grad is not None and not gpu:
+        if shared_param.grad is not None:
             return
-        elif not gpu:
-            shared_param._grad = param.grad
         else:
-            shared_param._grad = param.grad.cpu()
-
-
-def weights_init(m):
-    classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
-        weight_shape = list(m.weight.data.size())
-        fan_in = np.prod(weight_shape[1:4])
-        fan_out = np.prod(weight_shape[2:4]) * weight_shape[0]
-        w_bound = np.sqrt(6. / (fan_in + fan_out))
-        m.weight.data.uniform_(-w_bound, w_bound)
-        m.bias.data.fill_(0)
-    elif classname.find('Linear') != -1:
-        weight_shape = list(m.weight.data.size())
-        fan_in = weight_shape[1]
-        fan_out = weight_shape[0]
-        w_bound = np.sqrt(6. / (fan_in + fan_out))
-        m.weight.data.uniform_(-w_bound, w_bound)
-        m.bias.data.fill_(0)
+            shared_param._grad = param.grad
 
 
 def weights_init_mlp(m):
@@ -70,14 +50,10 @@ def weights_init_mlp(m):
             m.bias.data.fill_(0)
 
 
-def normal(x, mu, sigma, gpu_id, gpu=False):
+def normal(x, mu, sigma):
     pi = np.array([math.pi])
     pi = torch.from_numpy(pi).float()
-    if gpu:
-        with torch.cuda.device(gpu_id):
-            pi = Variable(pi).cuda()
-    else:
-        pi = Variable(pi)
+    pi = Variable(pi)
     a = (-1 * (x - mu).pow(2) / (2 * sigma)).exp()
     b = 1 / (2 * sigma * pi.expand_as(sigma)).sqrt()
     return a * b

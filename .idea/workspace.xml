@@ -2,17 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="537b8b1d-6da4-48c5-a4c3-2373196bbe5f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Torch/environment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/gym_eval.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/model.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/player_util.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/shared_optim.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/train.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Torch/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MasterAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/MasterAgent.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/Worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3C_continous.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/A3C_continous_upgraded.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ActorCriticModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/ActorCriticModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MasterAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/MasterAgent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Memory.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/Memory.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RandomAgent.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/RandomAgent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/gym_eval.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/gym_eval.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/logs/BipedalWalker-v2_log" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/logs/BipedalWalker-v2_log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/player_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/player_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/shared_optim.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/shared_optim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Torch/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Torch/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Worker.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/Worker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a3c_bipedalWalker.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/a3c_bipedalWalker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bipedal_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/TF/bipedal_main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,20 +31,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Torch/environment.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-610">
-              <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/gym_eval.py">
+        <entry file="file://$PROJECT_DIR$/Torch/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1431">
-              <caret line="34" column="13" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="13" />
+            <state relative-caret-position="203">
+              <caret line="19" column="30" selection-start-line="19" selection-start-column="26" selection-end-line="19" selection-end-column="30" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -44,43 +44,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/main.py">
+        <entry file="file://$PROJECT_DIR$/Torch/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="128">
-              <caret line="10" column="45" selection-start-line="10" selection-start-column="45" selection-end-line="10" selection-end-column="45" />
-              <folding>
-                <element signature="e#0#47#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/model.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/player_util.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/shared_optim.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="96">
+              <caret line="36" column="41" selection-start-line="36" selection-start-column="41" selection-end-line="36" selection-end-column="41" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -91,7 +58,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Torch/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="-578">
+              <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Torch/player_util.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="390">
+              <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -100,21 +77,46 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/train.py">
+        <entry file="file://$PROJECT_DIR$/Torch/gym_eval.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="-123">
+              <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Torch/utils.py">
+        <entry file="file://$PROJECT_DIR$/Torch/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
+            <state relative-caret-position="-1389">
+              <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#47#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Torch/shared_optim.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-28">
+              <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="36" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Torch/model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="6" column="32" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -130,30 +132,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>hoose_a</find>
-      <find>distrib</find>
-      <find>global</find>
-      <find>beta</find>
-      <find>reward</find>
-      <find>ep_loss</find>
-      <find>trainable</find>
-      <find>ep_steps</find>
-      <find>total_step</find>
-      <find>global_epi</find>
-      <find>total</find>
-      <find>action_size</find>
-      <find>motors_to</find>
-      <find>game_over</find>
-      <find>trainab</find>
-      <find>new_state</find>
-      <find>model</find>
       <find>mu</find>
-      <find>print</find>
-      <find>values</find>
       <find>pos</find>
-      <find>adam</find>
       <find>loss</find>
+      <find>entr</find>
+      <find>new_state</find>
+      <find>current_st</find>
+      <find>gae</find>
+      <find>variable</find>
+      <find>diag</find>
+      <find>after</find>
+      <find>model</find>
+      <find>model(</find>
+      <find>np.dia</find>
+      <find>conver</find>
+      <find>hx</find>
+      <find>frame</find>
+      <find>reward</find>
+      <find>eps</find>
+      <find>actio</find>
+      <find>values</find>
+      <find>print</find>
+      <find>stack_frames</find>
+      <find>create_env</find>
+      <find>filter</find>
       <find>render</find>
+      <find>init</find>
+      <find>gpu</find>
+      <find>amsgra</find>
+      <find>rewards</find>
+      <find>adam</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -166,11 +174,20 @@
         <option value="$PROJECT_DIR$/.matplotlib/matplotlibrc" />
         <option value="$PROJECT_DIR$/A3C_continous.py" />
         <option value="$PROJECT_DIR$/ActorCriticModel.py" />
-        <option value="$PROJECT_DIR$/MasterAgent.py" />
-        <option value="$PROJECT_DIR$/Worker.py" />
         <option value="$PROJECT_DIR$/a3c_bipedalWalker.py" />
+        <option value="$PROJECT_DIR$/Worker.py" />
+        <option value="$PROJECT_DIR$/MasterAgent.py" />
+        <option value="$PROJECT_DIR$/Torch/shared_optim.py" />
+        <option value="$PROJECT_DIR$/Torch/environment.py" />
+        <option value="$PROJECT_DIR$/Torch/gym_eval.py" />
+        <option value="$PROJECT_DIR$/Torch/player_util.py" />
+        <option value="$PROJECT_DIR$/Torch/model.py" />
         <option value="$PROJECT_DIR$/Torch/main.py" />
         <option value="$PROJECT_DIR$/Torch/train.py" />
+        <option value="$PROJECT_DIR$/Torch/test.py" />
+        <option value="$PROJECT_DIR$/Torch/utils.py" />
+        <option value="$PROJECT_DIR$/TF/a3c_bipedalWalker.py" />
+        <option value="$PROJECT_DIR$/TF/MasterAgent.py" />
       </list>
     </option>
   </component>
@@ -199,12 +216,6 @@
             </path>
             <path>
               <item name="assignment3_mas" type="b2602c69:ProjectViewProjectNode" />
-              <item name="assignment3_mas" type="462c0819:PsiDirectoryNode" />
-              <item name="Torch" type="462c0819:PsiDirectoryNode" />
-              <item name="logs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="assignment3_mas" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -219,6 +230,9 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/TF" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Torch" />
     </key>
@@ -235,7 +249,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.a3c_bipedalWalker (1)">
     <configuration name="A3C_continous" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="assignment3_mas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -271,6 +285,27 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/A3C_continous_upgraded.py" />
       <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="a3c_bipedalWalker (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="assignment3_mas" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TF" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TF/a3c_bipedalWalker.py" />
+      <option name="PARAMETERS" value="--train" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -320,6 +355,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="gym_eval" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="assignment3_mas" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Torch" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Torch/gym_eval.py" />
+      <option name="PARAMETERS" value="--env BipedalWalker-v2 --num-episodes 100 --stack-frames 1 --model MLP --new-gym-eval True --render True" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="assignment3_mas" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -333,7 +389,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Torch/main.py" />
-      <option name="PARAMETERS" value="--workers 4 --env BipedalWalker-v2 --save-max True --model MLP --stack-frames 1" />
+      <option name="PARAMETERS" value="--workers 4 --env BipedalWalker-v2 --save-max True" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -347,10 +403,14 @@
       <item itemvalue="Python.A3C_continous_upgraded" />
       <item itemvalue="Python.A3C_continous" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.gym_eval" />
+      <item itemvalue="Python.a3c_bipedalWalker (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.a3c_bipedalWalker (1)" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.gym_eval" />
         <item itemvalue="Python.A3C_continous" />
       </list>
     </recent_temporary>
@@ -402,7 +462,7 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/.matplotlib/matplotlibrc" />
-    <entry file="file://$PROJECT_DIR$/RandomAgent.py">
+    <entry file="file://$PROJECT_DIR$/TF/RandomAgent.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <folding>
@@ -411,36 +471,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/A3C_continous_upgraded.py">
+    <entry file="file://$PROJECT_DIR$/TF/Memory.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Torch/logs/BipedalWalker-v2_mon_log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Torch/logs/BipedalWalker-v2_log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="181" column="20" selection-start-line="181" selection-start-column="20" selection-end-line="181" selection-end-column="20" />
+        <state relative-caret-position="344">
+          <caret line="50" column="60" lean-forward="true" selection-start-line="50" selection-start-column="60" selection-end-line="50" selection-end-column="60" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/A3C_continous.py">
+    <entry file="file://$PROJECT_DIR$/TF/ActorCriticModel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="33" column="12" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="12" />
+        <state relative-caret-position="401">
+          <caret line="36" column="61" selection-start-line="36" selection-start-column="61" selection-end-line="36" selection-end-column="61" />
           <folding>
-            <element signature="e#236#258#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Memory.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ActorCriticModel.py">
+    <entry file="file://$PROJECT_DIR$/TF/bipedal_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-45">
-          <caret line="11" column="45" selection-start-line="11" selection-start-column="45" selection-end-line="11" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bipedal_main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1602">
+        <state relative-caret-position="-1468">
           <caret line="431" column="25" selection-start-line="431" selection-start-column="22" selection-end-line="431" selection-end-column="25" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
@@ -448,39 +504,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MasterAgent.py">
+    <entry file="file://$PROJECT_DIR$/TF/Worker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="102" column="18" selection-start-line="102" selection-start-column="18" selection-end-line="102" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Worker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="214">
-          <caret line="73" column="62" selection-start-line="73" selection-start-column="62" selection-end-line="73" selection-end-column="62" />
+        <state relative-caret-position="243">
+          <caret line="41" column="7" lean-forward="true" selection-start-line="41" selection-start-column="7" selection-end-line="44" selection-end-column="29" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/a3c_bipedalWalker.py">
+    <entry file="file://$PROJECT_DIR$/Torch/environment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="31" column="46" selection-start-line="31" selection-start-column="46" selection-end-line="31" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="3">
+          <caret line="30" column="25" lean-forward="true" selection-start-line="30" selection-start-column="25" selection-end-line="30" selection-end-column="25" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/model.py">
+    <entry file="file://$PROJECT_DIR$/Torch/gym_eval.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-123">
+          <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -489,25 +533,62 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Torch/player_util.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="390">
+          <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/shared_optim.py">
+    <entry file="file://$PROJECT_DIR$/A3C_continous.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-168">
+          <caret line="33" column="12" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="12" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
+            <element signature="e#236#258#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/A3C_continous_upgraded.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2579">
+          <caret line="181" column="20" selection-start-line="181" selection-start-column="20" selection-end-line="181" selection-end-column="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Torch/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-578">
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TF/a3c_bipedalWalker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="26" selection-end-line="20" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TF/MasterAgent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="25" column="91" selection-start-line="25" selection-start-column="91" selection-end-line="25" selection-end-column="91" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Torch/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="36" column="41" selection-start-line="36" selection-start-column="41" selection-end-line="36" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -516,14 +597,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Torch/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        <state relative-caret-position="203">
+          <caret line="19" column="30" selection-start-line="19" selection-start-column="26" selection-end-line="19" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/utils.py">
+    <entry file="file://$PROJECT_DIR$/Torch/shared_optim.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
+        <state relative-caret-position="-28">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="36" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
@@ -532,33 +617,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Torch/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="10" column="45" selection-start-line="10" selection-start-column="45" selection-end-line="10" selection-end-column="45" />
+        <state relative-caret-position="-1389">
+          <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
           <folding>
             <element signature="e#0#47#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/gym_eval.py">
+    <entry file="file://$PROJECT_DIR$/Torch/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1431">
-          <caret line="34" column="13" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/logs/BipedalWalker-v2_log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-106" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Torch/environment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-610">
-          <caret line="10" column="14" lean-forward="true" selection-start-line="10" selection-start-column="14" selection-end-line="10" selection-end-column="14" />
+        <state relative-caret-position="90">
+          <caret line="6" column="32" selection-start-line="6" selection-start-column="32" selection-end-line="6" selection-end-column="32" />
         </state>
       </provider>
     </entry>

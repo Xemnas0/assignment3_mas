@@ -39,6 +39,10 @@ class Worker(threading.Thread):
         self.env = gym.make(self.game_name).unwrapped
         self.save_dir = save_dir
         self.ep_loss = 0.0
+        self.mx_d = 3.15
+        self.mn_d = -3.15
+        self.new_maxd = 10.0
+        self.new_mind = -10.0
 
     def run(self):
         total_step = 1
@@ -46,59 +50,73 @@ class Worker(threading.Thread):
         # Loop for all the episodes
         while Worker.global_episode < args.max_eps:
             current_state = self.env.reset()
+
+            obs = current_state.clip(self.mn_d, self.mx_d)
+            current_state = (((obs - self.mn_d) * (self.new_maxd - self.new_mind)
+                        ) / (self.mx_d - self.mn_d)) + self.new_mind
+
             mem.clear()
             ep_reward = 0.
             ep_steps = 0
             self.ep_loss = 0
             time_count = 1
+            total_loss = tf.constant(10e5)
             # Loop through one episode, until done or reached maximum steps per episode
             for ep_t in range(args.max_step_per_ep):
+                # Take action based on current state
                 mu, sigma, _ = self.local_model(
                     tf.convert_to_tensor(current_state[None, :],
                                          dtype=tf.float32))
-                # cov_matrix = np.diag(sigma[0])
-                normal_dist = tfp.distributions.Normal(mu, sigma)
-                action = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0),
-                                          clip_value_min=-0.999999,
-                                          clip_value_max=0.999999)
-                # print(action.numpy())
+                cov_matrix = np.diag(sigma[0])
+                normal_dist = tfp.distributions.Normal(mu, tf.sqrt(sigma))
+                # action = tf.clip_by_value(tf.squeeze(normal_dist.sample(1), axis=0),
+                #                           clip_value_min=-0.999999,
+                #                           clip_value_max=0.999999)
+
+                action = tf.clip_by_value(mu,
+                                          clip_value_min=self.env.action_space.low,
+                                          clip_value_max=self.env.action_space.high)
+
+                # Receive new state and reward
+                # print(action.numpy()[0])
                 new_state, reward, done_game, _ = self.env.step(action.numpy()[0])
+                obs = new_state.clip(self.mn_d, self.mx_d)
+                new_state = (((obs - self.mn_d) * (self.new_maxd - self.new_mind)
+                                  ) / (self.mx_d - self.mn_d)) + self.new_mind
 
-                # Normalize labels
-                new_state[0] = (new_state[0] - math.pi) / math.pi
-                if new_state[8] < 0.5:
-                    new_state[8] = -1
-                if new_state[13] < 0.5:
-                    new_state[13] = -1
-                reward += new_state[2] + min(new_state[3], 0)  # Add score for moving right and keeping head up
-                reward -= math.fabs(new_state[4]-new_state[9])
+                done = True if ep_t == args.max_step_per_ep - 1 else done_game
 
-                done = True if ep_t == args.max_step_per_ep - 1 else False
-
-                # Playing around with scoring function to promote moving forward
-                # instead of standing still and not falling
-                reward = max(min(float(reward), 1.0), -1.0)
+                reward = max(min(float(reward), 1.0), -10.0)
                 ep_reward += reward
-                # reward = (reward + 8) / 8
+
                 mem.store(current_state, action, reward)
 
                 if time_count == args.update_freq or done:
 
                     # Calculate gradient wrt to local model. We do so by tracking the
                     # variables involved in computing the loss by using tf.GradientTape
-                    with tf.GradientTape() as tape:
+                    with tf.GradientTape(persistent=True) as tape:
+                        tape.watch(total_loss)
                         total_loss = self.compute_loss(done,
                                                        new_state,
                                                        mem,
                                                        args.gamma)
+
                     self.ep_loss += total_loss
                     # Calculate local gradients
                     grads = tape.gradient(total_loss, self.local_model.trainable_weights)
                     # Push local gradients to global model
-                    self.opt.apply_gradients(zip(grads,
-                                                 self.global_model.trainable_weights))
+                    try:
+                        self.opt.apply_gradients(zip(grads,
+                                                     self.global_model.trainable_weights))
+                    except ValueError:
+                        print("ValueError")
+
+
+
                     # Update local model with new weights
                     self.local_model.set_weights(self.global_model.get_weights())
+
                     mem.clear()
                     time_count = 0
 
@@ -118,6 +136,10 @@ class Worker(threading.Thread):
                                 )
                                 Worker.best_score = ep_reward
                         Worker.global_episode += 1
+                        ep_steps += 1
+                        time_count += 1
+                        total_step += 1
+                        break
                 ep_steps += 1
 
                 time_count += 1
@@ -145,33 +167,59 @@ class Worker(threading.Thread):
         discounted_rewards.reverse()
         # print(discounted_rewards)
 
-        mu, sigma, values = self.local_model(
-            tf.convert_to_tensor(np.vstack(memory.states),
-                                 dtype=tf.float32))
+        # mu, sigma, values = self.local_model(
+        #     tf.convert_to_tensor(np.vstack(memory.states),
+        #                          dtype=tf.float32))
+        # # Get our advantages
+        # advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
+        #                                  dtype=tf.float32) - values
+        # # Critic loss
+        # critic_loss = tf.square(advantage)
+        #
+        # # Actor loss
+        # normal_dist = tfp.distributions.Normal(mu, sigma)
+        # # print(normal_dist)
+        # log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions)) + 1e-10)
+        #
+        # # Entropy
+        # entropy = normal_dist.entropy()  # encourage exploration
+        #
+        # actor_loss = - log_prob * tf.stop_gradient(advantage) - 0.01 * entropy
+        # # actor_loss = - log_prob * advantage
 
-        # Get our advantages
-        advantage = tf.convert_to_tensor(np.array(discounted_rewards)[:, None],
+        actor_loss = 0
+        critic_loss = 0
+        gae = 0
+        for i in range(len(memory.states)):
+            mu, sigma, values = self.local_model(tf.convert_to_tensor(memory.states[i][None, :], dtype=tf.float32))
+            try:
+                _, _, next_value = self.local_model(tf.convert_to_tensor(memory.states[i+1][None, :], dtype=tf.float32))
+            except:
+                _, _, next_value = self.local_model(
+                tf.convert_to_tensor(new_state[None, :],
+                                     dtype=tf.float32))
+            advantage = tf.convert_to_tensor(np.array(discounted_rewards[i]),
                                          dtype=tf.float32) - values
-        # Critic loss
-        critic_loss = tf.square(advantage)
+            critic_loss = critic_loss + tf.square(advantage)
 
-        # Actor loss
-        normal_dist = tfp.distributions.Normal(mu, sigma)
-        log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions)) + 1e-10)
+            normal_dist = tfp.distributions.Normal(mu, sigma)
+            log_prob = tf.math.log(normal_dist.prob(np.array(memory.actions[i])) + 1e-10)
+            entropy = normal_dist.entropy()
 
-        actor_loss = - log_prob * tf.stop_gradient(advantage)
-        # actor_loss = - log_prob * advantage
+            # Generalized Advantage Estimation
+            delta_t = memory.rewards[i] + gamma * next_value - values
+            #
+            gae = gae * gamma + delta_t
 
-        # Entropy
-        entropy = normal_dist.entropy()  # encourage exploration
+            actor_loss = actor_loss - tf.reduce_mean(log_prob) * gae - 0.001 * tf.reduce_mean(entropy)
 
         # print("sigma: ", sigma[0])
         # print("mu: ", mu[0])
         # print("val: ", values)
         # print("dis rew: ", discounted_rewards)
-        print("crit: ", tf.reduce_mean(critic_loss))
-        print("actor: ", tf.reduce_mean(actor_loss))
+        # print("crit: ", tf.reduce_mean(critic_loss))
+        # print("actor: ", tf.reduce_mean(actor_loss))
         # print("entropy: ", tf.reduce_mean(entropy))
-        total_loss = tf.reduce_mean(0.5 * critic_loss + actor_loss - 0.005 * entropy)
+        total_loss = tf.reduce_mean(0.5 * critic_loss) + actor_loss
         # print("loss: ", total_loss)
         return total_loss

@@ -45,20 +45,9 @@ parser.add_argument(
 parser.add_argument(
     '--max-episode-length',
     type=int,
-    default=100000,
+    default=10000,
     metavar='M',
-    help='maximum length of an episode (default: 100000)')
-parser.add_argument(
-    '--model',
-    default='MLP',
-    metavar='M',
-    help='Model type to use')
-parser.add_argument(
-    '--stack-frames',
-    type=int,
-    default=1,
-    metavar='SF',
-    help='Choose whether to stack observations')
+    help='maximum length of an episode (default: 10000)')
 parser.add_argument(
     '--new-gym-eval',
     default=False,
@@ -70,11 +59,7 @@ parser.add_argument(
     default=1,
     metavar='S',
     help='random seed (default: 1)')
-parser.add_argument(
-    '--gpu-id',
-    type=int,
-    default=-1,
-    help='GPU to use [-1 CPU only] (default: -1)')
+
 args = parser.parse_args()
 
 torch.set_default_tensor_type('torch.FloatTensor')
@@ -89,49 +74,35 @@ setup_logger('{}_mon_log'.format(args.env), r'{0}{1}_mon_log'.format(
 log['{}_mon_log'.format(args.env)] = logging.getLogger(
     '{}_mon_log'.format(args.env))
 
-gpu_id = args.gpu_id
-
 torch.manual_seed(args.seed)
-if gpu_id >= 0:
-    torch.cuda.manual_seed(args.seed)
 
 
 d_args = vars(args)
 for k in d_args.keys():
     log['{}_mon_log'.format(args.env)].info('{0}: {1}'.format(k, d_args[k]))
 
-env = create_env("{}".format(args.env), args)
+env = create_env("{}".format(args.env))
 num_tests = 0
 reward_total_sum = 0
 player = Agent(None, env, args, None)
-if args.model == 'MLP':
-    player.model = A3C_MLP(env.observation_space.shape[0], env.action_space, args.stack_frames)
-if args.model == 'CONV':
-    player.model = A3C_CONV(args.stack_frames, env.action_space)
+player.model = A3C_MLP(env.observation_space.shape[0], env.action_space)
 
-player.gpu_id = gpu_id
-if gpu_id >= 0:
-    with torch.cuda.device(gpu_id):
-        player.model = player.model.cuda()
 if args.new_gym_eval:
     player.env = gym.wrappers.Monitor(
         player.env, "{}_monitor".format(args.env), force=True)
 
-if gpu_id >= 0:
-    with torch.cuda.device(gpu_id):
-        player.model.load_state_dict(saved_state)
-else:
-    player.model.load_state_dict(saved_state)
+player.model.load_state_dict(saved_state)
 
 player.model.eval()
+best_reward = 0
+best_speed = 0
 for i_episode in range(args.num_episodes):
     player.state = player.env.reset()
     player.state = torch.from_numpy(player.state).float()
-    if gpu_id >= 0:
-        with torch.cuda.device(gpu_id):
-            player.state = player.state.cuda()
     player.eps_len = 0
     reward_sum = 0
+    speed_sum = 0
+
     while True:
         if args.render:
             if i_episode % args.render_freq == 0:
@@ -139,11 +110,15 @@ for i_episode in range(args.num_episodes):
 
         player.action_test()
         reward_sum += player.reward
-
+        speed_sum += player.state.numpy()[0][2]
         if player.done:
             num_tests += 1
+            if reward_sum > best_reward:
+                best_reward = reward_sum
+            if speed_sum > best_speed:
+                best_speed = speed_sum
             reward_total_sum += reward_sum
             reward_mean = reward_total_sum / num_tests
             log['{}_mon_log'.format(args.env)].info(
-                "Episode_length, {0}, reward_sum, {1}, reward_mean, {2:.4f}".format(player.eps_len, reward_sum, reward_mean))
+                "Episode_length, {0}, reward_sum, {1}, reward_mean, {2:.4f}, best_speed, {3}, best_reward, {4}".format(player.eps_len, reward_sum, reward_mean, best_speed, best_reward))
             break

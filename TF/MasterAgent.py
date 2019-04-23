@@ -5,12 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from ActorCriticModel import ActorCriticModel
-from RandomAgent import RandomAgent
+from TF.RandomAgent import RandomAgent
 from queue import Queue
 import multiprocessing
 from a3c_bipedalWalker import args
 from Worker import Worker
-import math
 
 
 class MasterAgent:
@@ -24,7 +23,11 @@ class MasterAgent:
         env = gym.make(self.game_name)
         self.state_size = env.observation_space.shape[0]
         self.action_size = env.action_space.shape[0]
-        self.opt = keras.optimizers.Adam(lr=args.lr)
+        self.opt = keras.optimizers.Adam(lr=args.lr, amsgrad=True, beta_1=0.9, beta_2=0.999)
+        self.mx_d = 3.15
+        self.mn_d = -3.15
+        self.new_maxd = 10.0
+        self.new_mind = -10.0
         print(self.state_size, self.action_size)
 
         self.global_model = ActorCriticModel(self.state_size, self.action_size)  # global network
@@ -68,12 +71,9 @@ class MasterAgent:
     def play(self):
         env = gym.make(self.game_name).unwrapped
         state = env.reset()
-        # Normalize labels
-        state[0] -= math.pi
-        if state[8] < 0.5:
-            state[8] = -1
-        if state[13] < 0.5:
-            state[13] = -1
+        obs = state.clip(self.mn_d, self.mx_d)
+        state = (((obs - self.mn_d) * (self.new_maxd - self.new_mind)
+                      ) / (self.mx_d - self.mn_d)) + self.new_mind
         model = self.global_model
         model_path = os.path.join(self.save_dir, 'model_{}.h5'.format(self.game_name))
         print('Loading model from: {}'.format(model_path))
@@ -86,22 +86,15 @@ class MasterAgent:
             while not done and step_counter < 1600:
                 env.render(mode='rgb_array')
                 mu, sigma, value = model(tf.convert_to_tensor(state[None, :], dtype=tf.float32))
-                cov_matrix = np.diag(sigma[0])
-                action = tf.clip_by_value(np.random.multivariate_normal(mu[0], cov_matrix),
+                action = tf.clip_by_value(mu[0],
                                           clip_value_min=env.action_space.low,
                                           clip_value_max=env.action_space.high)
-                # action = tf.clip_by_value(mu[0],
-                #                           clip_value_min=env.action_space.low,
-                #                           clip_value_max=env.action_space.high)
 
                 state, reward, done, _ = env.step(action)
-                # Normalize labels
-                state[0] = (state[0] - math.pi) / math.pi
-                if state[8] < 0.5:
-                    state[8] = -1
-                if state[13] < 0.5:
-                    state[13] = -1
-                print(math.fabs(state[4]-state[9]))
+                obs = state.clip(self.mn_d, self.mx_d)
+                state = (((obs - self.mn_d) * (self.new_maxd - self.new_mind)
+                          ) / (self.mx_d - self.mn_d)) + self.new_mind
+
                 reward_sum += reward
                 print("{}. Reward: {}, action: {}".format(step_counter, reward_sum, action))
                 step_counter += 1
